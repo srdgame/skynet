@@ -48,7 +48,8 @@ CSERVICE = snlua logger gate harbor
 LUA_CLIB = skynet socketdriver bson mongo md5 netpack \
   clientsocket memory profile multicast \
   cluster crypt sharedata stm sproto lpeg \
-  mysqlaux debugchannel
+  mysqlaux debugchannel lfs cjson iconv \
+  LuaXML_lib visapi enet \
 
 SKYNET_SRC = skynet_main.c skynet_handle.c skynet_module.c skynet_mq.c \
   skynet_server.c skynet_start.c skynet_timer.c skynet_error.c \
@@ -129,6 +130,25 @@ $(LUA_CLIB_PATH)/mysqlaux.so : lualib-src/lua-mysqlaux.c | $(LUA_CLIB_PATH)
 
 $(LUA_CLIB_PATH)/debugchannel.so : lualib-src/lua-debugchannel.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -Iskynet-src $^ -o $@	
+
+$(LUA_CLIB_PATH)/lfs.so : 3rd/luafilesystem/src/lfs.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/luafilesystem/src $^ -o $@ 
+
+$(LUA_CLIB_PATH)/cjson.so : 3rd/cjson/fpconv.c 3rd/cjson/lua_cjson.c 3rd/cjson/strbuf.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/cjson $^ -o $@ 
+
+$(LUA_CLIB_PATH)/iconv.so : 3rd/iconv/luaiconv.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/iconv $^ -o $@ 
+
+$(LUA_CLIB_PATH)/LuaXML_lib.so : 3rd/luaxml/LuaXML_lib.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/luaxml $^ -o $@ 
+
+$(LUA_CLIB_PATH)/visapi.so : 3rd/visapi/lua_visapi.c 3rd/visapi/threadpool.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/visapi $^ -o $@ 
+
+$(LUA_CLIB_PATH)/enet.so : 3rd/lua-enet/enet.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/enet $^ -o $@  -lenet
+
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so

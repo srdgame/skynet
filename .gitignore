@@ -9,3 +9,8 @@
 *.so
 *.dSYM
 .DS_Store
+*.un~
+logs
+tags
+28181
+rdc

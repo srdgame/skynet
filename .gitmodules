@@ -1,3 +1,18 @@
 [submodule "3rd/jemalloc"]
 	path = 3rd/jemalloc
 	url = https://github.com/jemalloc/jemalloc.git
+[submodule "3rd/luafilesystem"]
+	path = 3rd/luafilesystem
+	url = https://github.com/keplerproject/luafilesystem.git
+[submodule "3rd/cjson"]
+	path = 3rd/cjson
+	url = https://github.com/mpx/lua-cjson.git
+[submodule "3rd/iconv"]
+	path = 3rd/iconv
+	url = https://github.com/ittner/lua-iconv.git
+[submodule "3rd/luaxml"]
+	path = 3rd/luaxml
+	url = https://github.com/LuaDist2/luaxml.git
+[submodule "3rd/lua-enet"]
+	path = 3rd/lua-enet
+	url = https://github.com/srdgame/lua-enet.git
