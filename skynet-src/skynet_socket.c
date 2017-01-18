@@ -193,6 +193,12 @@ skynet_socket_udp_send(struct skynet_context *ctx, int id, const char * address,
 	return check_wsz(ctx, id, (void *)buffer, wsz);
 }
 
+int
+skynet_socket_udp_sendto(struct skynet_context *ctx, int id, const char * addr, int port, const void *buffer, int sz) {
+	int64_t wsz = socket_server_udp_sendto(SOCKET_SERVER, id, addr, port, buffer, sz);
+	return check_wsz(ctx, id, (void *)buffer, wsz);
+}
+
 const char *
 skynet_socket_udp_address(struct skynet_socket_message *msg, int *addrsz) {
 	if (msg->type != SKYNET_SOCKET_TYPE_UDP) {

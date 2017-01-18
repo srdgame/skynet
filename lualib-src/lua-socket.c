@@ -649,6 +649,22 @@ ludp_send(lua_State *L) {
 }
 
 static int
+ludp_sendto(lua_State *L) {
+	struct skynet_context * ctx = lua_touserdata(L, lua_upvalueindex(1));
+	int id = luaL_checkinteger(L, 1);
+	const char * addr = luaL_checkstring(L, 2);
+	int port = luaL_checkinteger(L, 3);
+	int sz = 0;
+	void *buffer = get_buffer(L, 4, &sz);
+
+	int err = skynet_socket_udp_sendto(ctx, id, addr, port, buffer, sz);
+
+	lua_pushboolean(L, !err);
+
+	return 1;
+}
+
+static int
 ludp_address(lua_State *L) {
 	size_t sz = 0;
 	const uint8_t * addr = (const uint8_t *)luaL_checklstring(L, 1, &sz);
@@ -705,6 +721,7 @@ luaopen_socketdriver(lua_State *L) {
 		{ "udp", ludp },
 		{ "udp_connect", ludp_connect },
 		{ "udp_send", ludp_send },
+		{ "udp_sendto", ludp_sendto },
 		{ "udp_address", ludp_address },
 		{ NULL, NULL },
 	};

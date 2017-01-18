@@ -436,7 +436,11 @@ function socket.udp_connect(id, addr, port, callback)
 	driver.udp_connect(id, addr, port)
 end
 
-socket.sendto = assert(driver.udp_send)
+--function socket.sendto(id, from, msg)
+function socket.sendto(id, addr, port, msg)
+	local sendto = msg and driver.udp_sendto or driver.udp_send
+	return sendto(id, addr, port, msg)
+end
 socket.udp_address = assert(driver.udp_address)
 
 function socket.warning(id, callback)

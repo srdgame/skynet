@@ -1579,6 +1579,41 @@ socket_server_udp_send(struct socket_server *ss, int id, const struct socket_udp
 	return s->wb_size;
 }
 
+int64_t 
+socket_server_udp_sendto(struct socket_server *ss, int id, const char *addr, int port, const void *buffer, int sz) {
+	uint8_t address[UDP_ADDRESS_SIZE];
+	int status;
+	struct addrinfo ai_hints;
+	struct addrinfo *ai_list = NULL;
+	char portstr[16];
+	sprintf(portstr, "%d", port);
+	memset( &ai_hints, 0, sizeof( ai_hints ) );
+	ai_hints.ai_family = AF_UNSPEC;
+	ai_hints.ai_socktype = SOCK_DGRAM;
+	ai_hints.ai_protocol = IPPROTO_UDP;
+
+	status = getaddrinfo(addr, portstr, &ai_hints, &ai_list );
+	if ( status != 0 ) {
+		return -1;
+	}
+	int protocol;
+
+	if (ai_list->ai_family == AF_INET) {
+		protocol = PROTOCOL_UDP;
+	} else if (ai_list->ai_family == AF_INET6) {
+		protocol = PROTOCOL_UDPv6;
+	} else {
+		freeaddrinfo( ai_list );
+		return -1;
+	}
+
+	gen_udp_address(protocol, (union sockaddr_all *)ai_list->ai_addr, address);
+
+	freeaddrinfo( ai_list );
+
+	return socket_server_udp_send(ss, id, (const struct socket_udp_address *)address, buffer, sz);
+}
+
 int
 socket_server_udp_connect(struct socket_server *ss, int id, const char * addr, int port) {
 	int status;

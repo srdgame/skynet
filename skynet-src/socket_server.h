@@ -51,6 +51,7 @@ int socket_server_udp_connect(struct socket_server *, int id, const char * addr,
 // If the socket_udp_address is NULL, use last call socket_server_udp_connect address instead
 // You can also use socket_server_send 
 int64_t socket_server_udp_send(struct socket_server *, int id, const struct socket_udp_address *, const void *buffer, int sz);
+int64_t socket_server_udp_sendto(struct socket_server *, int id, const char * addr, int port, const void *buffer, int sz);
 // extract the address of the message, struct socket_message * should be SOCKET_UDP
 const struct socket_udp_address * socket_server_udp_address(struct socket_server *, struct socket_message *, int *addrsz);
 
