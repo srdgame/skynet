@@ -1,3 +1,4 @@
+-- read https://github.com/cloudwu/skynet/wiki/FAQ for the module "skynet.core"
 local c = require "skynet.core"
 local tostring = tostring
 local tonumber = tonumber
@@ -360,6 +361,11 @@ end
 function skynet.send(addr, typename, ...)
 	local p = proto[typename]
 	return c.send(addr, p.id, 0 , p.pack(...))
+end
+
+function skynet.rawsend(addr, typename, msg, sz)
+	local p = proto[typename]
+	return c.send(addr, p.id, 0 , msg, sz)
 end
 
 skynet.genid = assert(c.genid)
