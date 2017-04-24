@@ -16,3 +16,6 @@
 [submodule "3rd/lua-enet"]
 	path = 3rd/lua-enet
 	url = https://github.com/srdgame/lua-enet.git
+[submodule "3rd/librs232"]
+	path = 3rd/librs232
+	url = https://github.com/moteus/librs232.git

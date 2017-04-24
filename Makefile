@@ -2,6 +2,7 @@ include platform.mk
 
 LUA_CLIB_PATH ?= luaclib
 CSERVICE_PATH ?= cservice
+RS232_CLIB_PATH ?= luaclib/rs232
 
 SKYNET_BUILD_PATH ?= .
 
@@ -49,7 +50,7 @@ LUA_CLIB = skynet socketdriver bson mongo md5 netpack \
   clientsocket memory profile multicast \
   cluster crypt sharedata stm sproto lpeg \
   mysqlaux debugchannel lfs cjson iconv \
-  LuaXML_lib visapi enet \
+  LuaXML_lib visapi enet rs232/core \
 
 SKYNET_SRC = skynet_main.c skynet_handle.c skynet_module.c skynet_mq.c \
   skynet_server.c skynet_start.c skynet_timer.c skynet_error.c \
@@ -69,6 +70,10 @@ $(LUA_CLIB_PATH) :
 
 $(CSERVICE_PATH) :
 	mkdir $(CSERVICE_PATH)
+
+$(RS232_CLIB_PATH):
+	cp 3rd/librs232/bindings/lua/rs232.lua lualib/
+	mkdir $(RS232_CLIB_PATH)
 
 define CSERVICE_TEMP
   $$(CSERVICE_PATH)/$(1).so : service-src/service_$(1).c | $$(CSERVICE_PATH)
@@ -149,9 +154,12 @@ $(LUA_CLIB_PATH)/visapi.so : 3rd/visapi/lua_visapi.c 3rd/visapi/threadpool.c | $
 $(LUA_CLIB_PATH)/enet.so : 3rd/lua-enet/enet.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/enet $^ -o $@  -lenet
 
+$(LUA_CLIB_PATH)/rs232/core.so : 3rd/librs232/src/rs232.c 3rd/librs232/src/rs232_posix.c 3rd/librs232/bindings/lua/luars232.c | $(RS232_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/librs232/include $^ -o $@ 
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so
+	rm -f $(RS232_CLIB_PATH)
 
 cleanall: clean
 ifneq (,$(wildcard 3rd/jemalloc/Makefile))
