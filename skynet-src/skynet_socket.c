@@ -180,8 +180,7 @@ skynet_socket_udp_send(struct skynet_context *ctx, int id, const char * address,
 
 int
 skynet_socket_udp_sendto(struct skynet_context *ctx, int id, const char * addr, int port, const void *buffer, int sz) {
-	int64_t wsz = socket_server_udp_sendto(SOCKET_SERVER, id, addr, port, buffer, sz);
-	return check_wsz(ctx, id, (void *)buffer, wsz);
+	return socket_server_udp_sendto(SOCKET_SERVER, id, addr, port, buffer, sz);
 }
 
 const char *

@@ -159,7 +159,7 @@ $(LUA_CLIB_PATH)/rs232/core.so : 3rd/librs232/src/rs232.c 3rd/librs232/src/rs232
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so
-	rm -f $(RS232_CLIB_PATH)
+	rm -rf $(RS232_CLIB_PATH)
 
 cleanall: clean
 ifneq (,$(wildcard 3rd/jemalloc/Makefile))
