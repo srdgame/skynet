@@ -238,10 +238,12 @@ function suspend(co, result, command, param, size)
 	elseif command == "EXIT" then
 		-- coroutine exit
 		local address = session_coroutine_address[co]
-		release_watching(address)
-		session_coroutine_id[co] = nil
-		session_coroutine_address[co] = nil
-		session_response[co] = nil
+		if address then
+			release_watching(address)
+			session_coroutine_id[co] = nil
+			session_coroutine_address[co] = nil
+			session_response[co] = nil
+		end
 	elseif command == "QUIT" then
 		-- service exit
 		return
