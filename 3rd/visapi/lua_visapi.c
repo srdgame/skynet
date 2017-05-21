@@ -39,7 +39,7 @@
 #define DEFAULT_BUF_SIZE 1024 * 1024 * 8
 
 
-static void ERROR_ABORT(x, s) {
+static void ERROR_ABORT(int x, const char* s) {
 	fprintf(stderr, "%d : %s\n", x, s);
 	exit(-1);
 }
@@ -304,7 +304,6 @@ static void call_request_async(void* arg)
 	int expact_size = DEFAULT_BUF_SIZE;
 	int ec = 0;
 	int act_size = 0;
-	int rc = 1;
 	char* buf = malloc(expact_size * sizeof(char));
 	memset(buf, 0, expact_size);
 	if (buf == NULL) {
@@ -770,8 +769,8 @@ static void process_resp(lua_State* L)
 
 static int env_run(lua_State *L)
 {
-	struct timeval now;
-	struct timespec outtime;
+	//struct timeval now;
+	//struct timespec outtime;
 	//const int timeout = luaL_optinteger(L, 1, 100);
 
 	int status = pthread_mutex_lock(&callback_mutex);
