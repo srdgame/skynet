@@ -15,5 +15,6 @@ tags
 28181
 rdc
 rdcc
+iot
 /lualib/rs232.lua
 /lualib/luamqttc
