@@ -3,7 +3,6 @@ include platform.mk
 LUA_CLIB_PATH ?= luaclib
 CSERVICE_PATH ?= cservice
 RS232_CLIB_PATH ?= luaclib/rs232
-MQTTC_LUA_PATH ?= lualib/luamqttc
 
 SKYNET_BUILD_PATH ?= .
 
@@ -51,8 +50,9 @@ LUA_CLIB = skynet \
   client \
   bson md5 sproto lpeg \
   lfs cjson iconv \
-  LuaXML_lib visapi enet rs232/core \
-  mqttpacket
+  LuaXML_lib visapi enet \
+  rs232/core mosquitto \
+  \
 
 LUA_CLIB_SKYNET = \
   lua-skynet.c lua-seri.c \
@@ -96,7 +96,7 @@ $(RS232_CLIB_PATH):
 
 $(MQTTC_LUA_PATH):
 	mkdir $(MQTTC_LUA_PATH)
-	cp 3rd/luamqttc/src/*.lua $(MQTTC_LUA_PATH)
+	cp 3rd/luamqttc/src/skynet_client.lua $(MQTTC_LUA_PATH)/client.lua
 
 define CSERVICE_TEMP
   $$(CSERVICE_PATH)/$(1).so : service-src/service_$(1).c | $$(CSERVICE_PATH)
@@ -144,26 +144,32 @@ $(LUA_CLIB_PATH)/enet.so : 3rd/lua-enet/enet.c | $(LUA_CLIB_PATH)
 $(LUA_CLIB_PATH)/rs232/core.so : 3rd/librs232/src/rs232.c 3rd/librs232/src/rs232_posix.c 3rd/librs232/bindings/lua/luars232.c | $(RS232_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/librs232/include $^ -o $@ 
 
-LUA_CLIB_MQTT_PAHO = \
-	MQTTConnectClient.c \
-	MQTTConnectServer.c \
-	MQTTDeserializePublish.c \
-	MQTTFormat.c \
-	MQTTPacket.c \
-	MQTTSerializePublish.c \
-	MQTTSubscribeClient.c \
-	MQTTSubscribeServer.c \
-	MQTTUnsubscribeClient.c \
-	MQTTUnsubscribeServer.c \
+LUA_CLIB_MQTT_MOSQ = \
+	lib/logging_mosq.c \
+	lib/messages_mosq.c \
+	lib/net_mosq.c \
+	lib/read_handle_client.c \
+	lib/send_client_mosq.c \
+	lib/socks_mosq.c \
+	lib/thread_mosq.c \
+	lib/tls_mosq.c \
+	lib/will_mosq.c \
+	lib/memory_mosq.c \
+	lib/mosquitto.c \
+	lib/read_handle.c \
+	lib/read_handle_shared.c \
+	lib/send_mosq.c \
+	lib/srv_mosq.c \
+	lib/time_mosq.c \
+	lib/util_mosq.c \
 	\
 
-LUA_CLIB_MQTTC = \
-	deps/lua-compat-5.2/compat-5.2.c \
-	src/luamqttpacket.c \
+LUA_CLIB_MOSQ = \
+	lua-mosquitto.c \
 	\
 
-$(LUA_CLIB_PATH)/mqttpacket.so : $(addprefix 3rd/luamqttc/deps/org.eclipse.paho.mqtt.embedded-c/MQTTPacket/src/,$(LUA_CLIB_MQTT_PAHO)) $(addprefix 3rd/luamqttc/,$(LUA_CLIB_MQTTC)) | $(LUA_CLIB_PATH) $(MQTTC_LUA_PATH)
-	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/luamqttc/deps/org.eclipse.paho.mqtt.embedded-c/MQTTPacket/src -I3rd/luamqttc/deps/lua-compat-5.2 -I3rd/luamqttc
+$(LUA_CLIB_PATH)/mosquitto.so : $(addprefix 3rd/lua-mosquitto/deps/mosquitto/,$(LUA_CLIB_MQTT_MOSQ)) $(addprefix 3rd/lua-mosquitto/,$(LUA_CLIB_MOSQ)) | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lua-mosquitto/deps/mosquitto -I3rd/lua-mosquitto/deps/mosquitto/lib -I3rd/lua-mosquitto -DVERSION=\"1.4.12\"
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so

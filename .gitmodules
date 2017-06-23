@@ -19,6 +19,6 @@
 [submodule "3rd/librs232"]
 	path = 3rd/librs232
 	url = https://github.com/moteus/librs232.git
-[submodule "3rd/luamqttc"]
-	path = 3rd/luamqttc
-	url = https://github.com/Yongke/luamqttc.git
+[submodule "3rd/lua-mosquitto"]
+	path = 3rd/lua-mosquitto
+	url = https://github.com/kooiot/lua-mosquitto.git
