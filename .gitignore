@@ -17,4 +17,3 @@ rdc
 rdcc
 iot
 /lualib/rs232.lua
-/lualib/luamqttc
