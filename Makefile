@@ -51,7 +51,7 @@ LUA_CLIB = skynet \
   bson md5 sproto lpeg \
   lfs cjson iconv \
   LuaXML_lib visapi enet \
-  rs232/core mosquitto \
+  rs232/core mosquitto libmodbus \
   \
 
 LUA_CLIB_SKYNET = \
@@ -143,6 +143,9 @@ $(LUA_CLIB_PATH)/enet.so : 3rd/lua-enet/enet.c | $(LUA_CLIB_PATH)
 
 $(LUA_CLIB_PATH)/rs232/core.so : 3rd/librs232/src/rs232.c 3rd/librs232/src/rs232_posix.c 3rd/librs232/bindings/lua/luars232.c | $(RS232_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/librs232/include $^ -o $@ 
+
+$(LUA_CLIB_PATH)/libmodbus.so : 3rd/lua-libmodbus/lua-libmodbus.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-libmodbus $^ -o $@  -lmodbus
 
 LUA_CLIB_MQTT_MOSQ = \
 	lib/logging_mosq.c \
