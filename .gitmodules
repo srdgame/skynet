@@ -24,4 +24,4 @@
 	url = https://github.com/kooiot/lua-mosquitto.git
 [submodule "3rd/lua-libmodbus"]
 	path = 3rd/lua-libmodbus
-	url = https://github.com/remakeelectric/lua-libmodbus.git
+	url = https://github.com/kooiot/lua-libmodbus.git
