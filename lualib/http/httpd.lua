@@ -97,13 +97,13 @@ local function readall(readbytes, bodylimit)
 		end
 	end
 
-	return 200, url, method, header, body
+	return 200, url, method, header, body, httpver
 end
 
 function httpd.read_request(...)
-	local ok, code, url, method, header, body = pcall(readall, ...)
+	local ok, code, url, method, header, body, httpver = pcall(readall, ...)
 	if ok then
-		return code, url, method, header, body
+		return code, url, method, header, body, httpver
 	else
 		return nil, code
 	end
