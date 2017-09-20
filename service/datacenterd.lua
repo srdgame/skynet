@@ -6,6 +6,9 @@ local wait_queue = {}
 local mode = {}
 
 local function query(db, key, ...)
+	if db == nil then
+		return nil
+	end
 	if key == nil then
 		return db
 	else
