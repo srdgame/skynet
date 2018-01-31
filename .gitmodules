@@ -25,3 +25,6 @@
 [submodule "3rd/lua-libmodbus"]
 	path = 3rd/lua-libmodbus
 	url = https://github.com/kooiot/lua-libmodbus
+[submodule "3rd/curl"]
+	path = 3rd/curl
+	url = https://github.com/Lua-cURL/Lua-cURLv3.git
