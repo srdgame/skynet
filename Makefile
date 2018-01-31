@@ -56,6 +56,7 @@ LUA_EX_CLIB = \
   LuaXML_lib visapi \
   rs232/core mosquitto \
   enet libmodbus \
+  lcurl \
   \
 
 LUA_CLIB_SKYNET = \
@@ -177,7 +178,22 @@ LUA_CLIB_MOSQ = \
 	\
 
 $(LUA_CLIB_PATH)/mosquitto.so : $(addprefix 3rd/lua-mosquitto/deps/mosquitto/,$(LUA_CLIB_MQTT_MOSQ)) $(addprefix 3rd/lua-mosquitto/,$(LUA_CLIB_MOSQ)) | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lua-mosquitto/deps/mosquitto -I3rd/lua-mosquitto/deps/mosquitto/lib -I3rd/lua-mosquitto -DVERSION=\"1.4.12\" -DWITH_THREADING -lpthread
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lua-mosquitto/deps/mosquitto -I3rd/lua-mosquitto/deps/mosquitto/lib -I3rd/lua-mosquitto -DVERSION=\"1.4.12\" -DWITH_THREADING -DWITH_TLS -lssl -lpthread
+
+
+LUA_CLIB_LCURL = \
+	src/l52util.c \
+	src/lceasy.c \
+	src/lcerror.c \
+	src/lchttppost.c \
+	src/lcmulti.c \
+	src/lcshare.c \
+	src/lcurl.c \
+	src/lcutils.c \
+	\
+
+$(LUA_CLIB_PATH)/lcurl.so : $(addprefix 3rd/curl/,$(LUA_CLIB_LCURL)) | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/curl/src -DPTHREADS -lpthread
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so
