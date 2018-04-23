@@ -100,10 +100,6 @@ $(RS232_CLIB_PATH):
 	cp 3rd/librs232/bindings/lua/rs232.lua lualib/
 	mkdir $(RS232_CLIB_PATH)
 
-$(MQTTC_LUA_PATH):
-	mkdir $(MQTTC_LUA_PATH)
-	cp 3rd/luamqttc/src/skynet_client.lua $(MQTTC_LUA_PATH)/client.lua
-
 define CSERVICE_TEMP
   $$(CSERVICE_PATH)/$(1).so : service-src/service_$(1).c | $$(CSERVICE_PATH)
 	$$(CC) $$(CFLAGS) $$(SHARED) $$< -o $$@ -Iskynet-src
