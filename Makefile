@@ -55,9 +55,15 @@ LUA_EX_CLIB = \
   lfs cjson iconv \
   LuaXML_lib visapi \
   rs232/core mosquitto \
-  enet libmodbus \
   lcurl \
   \
+
+ICONV_LIBS :=
+ifeq ($(PLAT),openwrt)
+	ICONV_LIBS := -liconv
+else
+	LUA_EX_CLIB += enet libmodbus
+endif
 
 LUA_CLIB_SKYNET = \
   lua-skynet.c lua-seri.c \
@@ -132,7 +138,7 @@ $(LUA_CLIB_PATH)/cjson.so : 3rd/cjson/fpconv.c 3rd/cjson/lua_cjson.c 3rd/cjson/s
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/cjson $^ -o $@ 
 
 $(LUA_CLIB_PATH)/iconv.so : 3rd/iconv/luaiconv.c | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) -I3rd/iconv $^ -o $@ 
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/iconv $^ -o $@ $(ICONV_LIBS)
 
 $(LUA_CLIB_PATH)/LuaXML_lib.so : 3rd/luaxml/LuaXML_lib.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/luaxml $^ -o $@ 
