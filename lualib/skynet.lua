@@ -133,6 +133,8 @@ local function dispatch_wakeup()
 		local session = sleep_session[token]
 		if session then
 			local co = session_id_coroutine[session]
+			local tag = session_coroutine_tracetag[co]
+			if tag then c.trace(tag, "resume") end
 			session_id_coroutine[session] = "BREAK"
 			return suspend(co, coroutine_resume(co, false, "BREAK"))
 		end
@@ -285,9 +287,17 @@ function suspend(co, result, command, param, param2)
 		session_coroutine_id[co] = nil
 		return suspend(co, coroutine_resume(co))
 	elseif command == "TRACE" then
-		session_coroutine_tracetag[co] = param
-		c.trace(param, "trace")
-		return suspend(co, coroutine_resume(co))
+		if param then
+			session_coroutine_tracetag[co] = param
+			if param2 then
+				c.trace(param, "trace " .. param2)
+			else
+				c.trace(param, "trace")
+			end
+		else
+			param = session_coroutine_tracetag[co]
+		end
+		return suspend(co, coroutine_resume(co, param))
 	elseif command == nil then
 		-- debug trace
 		return
@@ -346,9 +356,13 @@ skynet.now = c.now
 skynet.hpc = c.hpc	-- high performance counter
 
 local traceid = 0
-function skynet.trace()
+function skynet.trace(info)
 	traceid = traceid + 1
-	coroutine_yield("TRACE", string.format(":%08x-%d",skynet.self(), traceid))
+	coroutine_yield("TRACE", string.format(":%08x-%d",skynet.self(), traceid), info)
+end
+
+function skynet.tracetag()
+	return coroutine_yield "TRACE"
 end
 
 local starttime
@@ -446,6 +460,16 @@ function skynet.rawcall(addr, typename, msg, sz)
 	local p = proto[typename]
 	local session = assert(c.send(addr, p.id , nil , msg, sz), "call to invalid address")
 	return yield_call(addr, session)
+end
+
+function skynet.tracecall(tag, addr, typename, msg, sz)
+	c.trace(tag, "tracecall begin")
+	c.send(addr, skynet.PTYPE_TRACE, 0, tag)
+	local p = proto[typename]
+	local session = assert(c.send(addr, p.id , nil , msg, sz), "call to invalid address")
+	local msg, sz = yield_call(addr, session)
+	c.trace(tag, "tracecall end")
+	return msg, sz
 end
 
 function skynet.ret(msg, sz)
@@ -624,6 +648,7 @@ function skynet.harbor(addr)
 end
 
 skynet.error = c.error
+skynet.tracelog = c.trace
 
 ----- register protocol
 do
