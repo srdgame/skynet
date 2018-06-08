@@ -55,7 +55,7 @@ LUA_EX_CLIB = \
   lfs cjson iconv \
   LuaXML_lib visapi \
   rs232/core mosquitto \
-  lcurl \
+  lcurl zlib\
   \
 
 ICONV_LIBS :=
@@ -154,6 +154,9 @@ $(LUA_CLIB_PATH)/rs232/core.so : 3rd/librs232/src/rs232.c 3rd/librs232/src/rs232
 
 $(LUA_CLIB_PATH)/libmodbus.so : 3rd/lua-libmodbus/lua-libmodbus.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-libmodbus $^ -o $@  -lmodbus
+
+$(LUA_CLIB_PATH)/zlib.so : 3rd/lua-zlib/lua_zlib.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-zlib $^ -o $@  -lz
 
 LUA_CLIB_MQTT_MOSQ = \
 	lib/logging_mosq.c \

@@ -28,3 +28,6 @@
 [submodule "3rd/curl"]
 	path = 3rd/curl
 	url = https://github.com/Lua-cURL/Lua-cURLv3.git
+[submodule "3rd/lua-zlib"]
+	path = 3rd/lua-zlib
+	url = https://github.com/brimworks/lua-zlib.git
