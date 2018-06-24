@@ -159,23 +159,41 @@ $(LUA_CLIB_PATH)/zlib.so : 3rd/lua-zlib/lua_zlib.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-zlib $^ -o $@  -lz
 
 LUA_CLIB_MQTT_MOSQ = \
+	lib/actions.c \
+	lib/handle_connack.c \
+	lib/handle_publish.c \
+	lib/handle_suback.c \
 	lib/logging_mosq.c \
 	lib/messages_mosq.c \
-	lib/net_mosq.c \
-	lib/read_handle_client.c \
-	lib/send_client_mosq.c \
+	lib/options.c \
+	lib/send_connect.c \
+	lib/send_publish.c \
 	lib/socks_mosq.c \
-	lib/thread_mosq.c \
-	lib/tls_mosq.c \
-	lib/will_mosq.c \
-	lib/memory_mosq.c \
-	lib/mosquitto.c \
-	lib/read_handle.c \
-	lib/read_handle_shared.c \
-	lib/send_mosq.c \
-	lib/srv_mosq.c \
 	lib/time_mosq.c \
 	lib/util_mosq.c \
+	lib/callbacks.c \
+	lib/handle_ping.c \
+	lib/handle_pubrec.c \
+	lib/handle_unsuback.c \
+	lib/loop.c \
+	lib/mosquitto.c \
+	lib/packet_mosq.c \
+	lib/send_disconnect.c \
+	lib/send_subscribe.c \
+	lib/srv_mosq.c \
+	lib/tls_mosq.c \
+	lib/will_mosq.c \
+	lib/connect.c \
+	lib/handle_pubackcomp.c \
+	lib/handle_pubrel.c \
+	lib/helpers.c \
+	lib/memory_mosq.c \
+	lib/net_mosq.c \
+	lib/read_handle.c \
+	lib/send_mosq.c \
+	lib/send_unsubscribe.c \
+	lib/thread_mosq.c \
+	lib/utf8_mosq.c \
 	\
 
 LUA_CLIB_MOSQ = \
