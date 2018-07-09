@@ -18,4 +18,5 @@ rdcc
 ioe
 /lualib/rs232.lua
 cfg.json*
+__crash_backup
 .htpasswd.lwf
