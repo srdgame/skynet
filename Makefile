@@ -60,7 +60,7 @@ LUA_EX_CLIB = \
 
 ICONV_LIBS :=
 ifeq ($(PLAT),openwrt)
-	ICONV_LIBS := -liconv
+	ICONV_LIBS := -liconv -L/usr/lib/libiconv-full-full/lib
 else
 	LUA_EX_CLIB += enet libmodbus
 endif
