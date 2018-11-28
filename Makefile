@@ -55,7 +55,7 @@ LUA_EX_CLIB = \
   lfs cjson iconv \
   LuaXML_lib visapi \
   rs232/core mosquitto \
-  lcurl zlib\
+  lcurl zlib lsocket \
   \
 
 ICONV_LIBS :=
@@ -90,6 +90,7 @@ SKYNET_SRC = skynet_main.c skynet_handle.c skynet_module.c skynet_mq.c \
 all : \
   $(SKYNET_BUILD_PATH)/skynet \
   $(foreach v, $(CSERVICE), $(CSERVICE_PATH)/$(v).so) \
+  $(foreach v, $(CSERVICE_EX), $(CSERVICE_PATH)/$(v).so) \
   $(foreach v, $(LUA_CLIB), $(LUA_CLIB_PATH)/$(v).so) \
   $(foreach v, $(LUA_EX_CLIB), $(LUA_CLIB_PATH)/$(v).so) 
 
@@ -157,6 +158,9 @@ $(LUA_CLIB_PATH)/libmodbus.so : 3rd/lua-libmodbus/lua-libmodbus.c | $(LUA_CLIB_P
 
 $(LUA_CLIB_PATH)/zlib.so : 3rd/lua-zlib/lua_zlib.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-zlib $^ -o $@  -lz
+
+$(LUA_CLIB_PATH)/lsocket.so : 3rd/lsocket/lsocket.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/lsocket $^ -o $@
 
 LUA_CLIB_MQTT_MOSQ = \
 	lib/actions.c \

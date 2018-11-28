@@ -31,3 +31,6 @@
 [submodule "3rd/lua-zlib"]
 	path = 3rd/lua-zlib
 	url = https://github.com/brimworks/lua-zlib.git
+[submodule "3rd/lsocket"]
+	path = 3rd/lsocket
+	url = https://github.com/cloudwu/lsocket.git
