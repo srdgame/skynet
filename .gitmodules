@@ -10,9 +10,6 @@
 [submodule "3rd/iconv"]
 	path = 3rd/iconv
 	url = https://github.com/ittner/lua-iconv.git
-[submodule "3rd/luaxml"]
-	path = 3rd/luaxml
-	url = https://github.com/LuaDist2/luaxml.git
 [submodule "3rd/lua-enet"]
 	path = 3rd/lua-enet
 	url = https://github.com/srdgame/lua-enet.git

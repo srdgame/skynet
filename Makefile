@@ -53,7 +53,6 @@ LUA_CLIB = skynet \
 
 LUA_EX_CLIB = \
   lfs cjson iconv \
-  LuaXML_lib visapi \
   rs232/core mosquitto \
   lcurl zlib lsocket \
   \
@@ -139,12 +138,6 @@ $(LUA_CLIB_PATH)/cjson.so : 3rd/cjson/fpconv.c 3rd/cjson/lua_cjson.c 3rd/cjson/s
 
 $(LUA_CLIB_PATH)/iconv.so : 3rd/iconv/luaiconv.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/iconv $^ -o $@ $(ICONV_LIBS)
-
-$(LUA_CLIB_PATH)/LuaXML_lib.so : 3rd/luaxml/LuaXML_lib.c | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) -I3rd/luaxml $^ -o $@ 
-
-$(LUA_CLIB_PATH)/visapi.so : 3rd/visapi/lua_visapi.c 3rd/visapi/threadpool.c | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) -I3rd/visapi $^ -o $@ 
 
 $(LUA_CLIB_PATH)/enet.so : 3rd/lua-enet/enet.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/enet $^ -o $@  -lenet
