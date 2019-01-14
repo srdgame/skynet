@@ -204,6 +204,7 @@ LUA_CLIB_LCURL = \
 	src/lceasy.c \
 	src/lcerror.c \
 	src/lchttppost.c \
+	src/lcmime.c \
 	src/lcmulti.c \
 	src/lcshare.c \
 	src/lcurl.c \
