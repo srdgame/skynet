@@ -127,6 +127,9 @@ solaris:
 openwrt:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_OPENWRT" SYSLIBS="-Wl,-E -ldl"
 
+android:
+	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_OPENWRT" SYSLIBS="-Wl,-E -ldl"
+
 # list targets that do not create files (but not all makes understand .PHONY)
 .PHONY: all $(PLATS) default o a clean depend echo none
 
