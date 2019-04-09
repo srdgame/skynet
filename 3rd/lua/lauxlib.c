@@ -699,6 +699,7 @@ static int skipcomment (LoadF *lf, int *cp) {
   else return 0;  /* no comment */
 }
 
+LUA_API void luaS_expandshr(int n);
 
 static int luaL_loadfilex_ (lua_State *L, const char *filename,
                                              const char *mode) {
@@ -724,7 +725,9 @@ static int luaL_loadfilex_ (lua_State *L, const char *filename,
   }
   if (c != EOF)
     lf.buff[lf.n++] = c;  /* 'c' is the first character of the stream */
+  luaS_expandshr(4096);
   status = lua_load(L, getF, &lf, lua_tostring(L, -1), mode);
+  luaS_expandshr(-4096);
   readstatus = ferror(lf.f);
   if (filename) fclose(lf.f);  /* close file (even in case of errors) */
   if (readstatus) {
