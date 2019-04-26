@@ -407,6 +407,12 @@ lnow(lua_State *L) {
 }
 
 static int
+lfix_time(lua_State *L) {
+	skynet_fix_time();
+	return 0;
+}
+
+static int
 lhpc(lua_State *L) {
 	lua_pushinteger(L, get_time());
 	return 1;
@@ -505,6 +511,7 @@ luaopen_skynet_core(lua_State *L) {
 		{ "packstring", lpackstring },
 		{ "trash" , ltrash },
 		{ "now", lnow },
+		{ "fix_time", lfix_time },
 		{ "hpc", lhpc },	// getHPCounter
 		{ NULL, NULL },
 	};

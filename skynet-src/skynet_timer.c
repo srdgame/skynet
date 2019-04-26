@@ -290,6 +290,18 @@ skynet_now(void) {
 	return TI->current;
 }
 
+void
+skynet_fix_time(void) {
+	uint64_t org_current = TI->current;
+	uint32_t starttime = 0;
+	uint32_t current = 0;
+	systime(&starttime, &current);
+	TI->current = current + (starttime - TI->starttime) * 100;
+	TI->current_point = gettime();
+
+	skynet_error(NULL, "fix time called, change from current %lld to %lld", org_current, TI->current);
+}
+
 void 
 skynet_timer_init(void) {
 	TI = timer_create_timer();

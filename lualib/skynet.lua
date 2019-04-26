@@ -253,6 +253,7 @@ function skynet.localname(name)
 end
 
 skynet.now = c.now
+skynet.fix_time = c.fix_time
 skynet.hpc = c.hpc	-- high performance counter
 
 local traceid = 0
