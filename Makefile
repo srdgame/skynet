@@ -168,48 +168,58 @@ $(LUA_CLIB_PATH)/lsocket.so : 3rd/lsocket/lsocket.c | $(LUA_CLIB_PATH)
 
 LUA_CLIB_MQTT_MOSQ = \
 	lib/actions.c \
-	lib/handle_connack.c \
-	lib/handle_publish.c \
-	lib/handle_suback.c \
-	lib/logging_mosq.c \
-	lib/messages_mosq.c \
-	lib/options.c \
-	lib/send_connect.c \
-	lib/send_publish.c \
-	lib/socks_mosq.c \
-	lib/time_mosq.c \
-	lib/util_mosq.c \
+	lib/alias_mosq.c \
 	lib/callbacks.c \
-	lib/handle_ping.c \
-	lib/handle_pubrec.c \
-	lib/handle_unsuback.c \
-	lib/loop.c \
-	lib/mosquitto.c \
-	lib/packet_mosq.c \
-	lib/send_disconnect.c \
-	lib/send_subscribe.c \
-	lib/srv_mosq.c \
-	lib/tls_mosq.c \
-	lib/will_mosq.c \
 	lib/connect.c \
+	lib/handle_auth.c \
+	lib/handle_connack.c \
+	lib/handle_disconnect.c \
+	lib/handle_ping.c \
 	lib/handle_pubackcomp.c \
+	lib/handle_publish.c \
+	lib/handle_pubrec.c \
 	lib/handle_pubrel.c \
+	lib/handle_suback.c \
+	lib/handle_unsuback.c \
 	lib/helpers.c \
+	lib/logging_mosq.c \
+	lib/loop.c \
 	lib/memory_mosq.c \
+	lib/messages_mosq.c \
+	lib/mosquitto.c \
 	lib/net_mosq.c \
+	lib/net_mosq_ocsp.c \
+	lib/options.c \
+	lib/packet_datatypes.c \
+	lib/packet_mosq.c \
+	lib/property_mosq.c \
 	lib/read_handle.c \
+	lib/send_connect.c \
+	lib/send_disconnect.c \
 	lib/send_mosq.c \
+	lib/send_publish.c \
+	lib/send_subscribe.c \
 	lib/send_unsubscribe.c \
+	lib/socks_mosq.c \
+	lib/srv_mosq.c \
 	lib/thread_mosq.c \
+	lib/time_mosq.c \
+	lib/tls_mosq.c \
 	lib/utf8_mosq.c \
+	lib/util_mosq.c \
+	lib/util_topic.c \
+	lib/will_mosq.c \
 	\
 
 LUA_CLIB_MOSQ = \
 	lua-mosquitto.c \
 	\
 
+LUA_CLIB_MOSQ_INCLUDES = \
+	-I3rd/lua-mosquitto/deps/mosquitto -I3rd/lua-mosquitto/deps/mosquitto/lib -I3rd/lua-mosquitto -I3rd/lua-mosquitto/deps/mosquitto/src/deps
+
 $(LUA_CLIB_PATH)/mosquitto.so : $(addprefix 3rd/lua-mosquitto/deps/mosquitto/,$(LUA_CLIB_MQTT_MOSQ)) $(addprefix 3rd/lua-mosquitto/,$(LUA_CLIB_MOSQ)) | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lua-mosquitto/deps/mosquitto -I3rd/lua-mosquitto/deps/mosquitto/lib -I3rd/lua-mosquitto -DVERSION=\"1.4.12\" -DWITH_TLS -lssl -lcrypto
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ $(LUA_CLIB_MOSQ_INCLUDES) -DVERSION=\"1.4.12\" -DWITH_TLS -lssl -lcrypto
 
 
 LUA_CLIB_LCURL = \
