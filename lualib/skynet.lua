@@ -6,6 +6,8 @@ local assert = assert
 local pairs = pairs
 local pcall = pcall
 local table = table
+local tremove = table.remove
+local tinsert = table.insert
 
 local profile = require "skynet.profile"
 
@@ -70,7 +72,7 @@ local suspend
 ----- monitor exit
 
 local function dispatch_error_queue()
-	local session = table.remove(error_queue,1)
+	local session = tremove(error_queue,1)
 	if session then
 		local co = session_id_coroutine[session]
 		session_id_coroutine[session] = nil
@@ -89,13 +91,13 @@ local function _error_dispatch(error_session, error_source)
 		end
 		for session, srv in pairs(watching_session) do
 			if srv == error_source then
-				table.insert(error_queue, session)
+				tinsert(error_queue, session)
 			end
 		end
 	else
 		-- capture an error for error_session
 		if watching_session[error_session] then
-			table.insert(error_queue, error_session)
+			tinsert(error_queue, error_session)
 		end
 	end
 end
@@ -105,7 +107,7 @@ end
 local coroutine_pool = setmetatable({}, { __mode = "kv" })
 
 local function co_create(f)
-	local co = table.remove(coroutine_pool)
+	local co = tremove(coroutine_pool)
 	if co == nil then
 		co = coroutine_create(function(...)
 			f(...)
@@ -148,7 +150,7 @@ local function co_create(f)
 end
 
 local function dispatch_wakeup()
-	local token = table.remove(wakeup_queue,1)
+	local token = tremove(wakeup_queue,1)
 	if token then
 		local session = sleep_session[token]
 		if session then
@@ -480,7 +482,7 @@ end
 
 function skynet.wakeup(token)
 	if sleep_session[token] then
-		table.insert(wakeup_queue, token)
+		tinsert(wakeup_queue, token)
 		return true
 	end
 end
@@ -527,7 +529,7 @@ function skynet.fork(func,...)
 		local args = { ... }
 		co = co_create(function() func(table.unpack(args,1,n)) end)
 	end
-	table.insert(fork_queue, co)
+	tinsert(fork_queue, co)
 	return co
 end
 
@@ -598,11 +600,10 @@ end
 function skynet.dispatch_message(...)
 	local succ, err = pcall(raw_dispatch_message,...)
 	while true do
-		local key,co = next(fork_queue)
+		local co = tremove(fork_queue,1)
 		if co == nil then
 			break
 		end
-		fork_queue[key] = nil
 		local fork_succ, fork_err = pcall(suspend,co,coroutine_resume(co))
 		if not fork_succ then
 			if succ then
@@ -690,7 +691,7 @@ function skynet.init(f, name)
 	if init_func == nil then
 		f()
 	else
-		table.insert(init_func, f)
+		tinsert(init_func, f)
 		if name then
 			assert(type(name) == "string")
 			assert(init_func[name] == nil)
