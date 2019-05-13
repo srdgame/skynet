@@ -293,10 +293,17 @@ skynet_now(void) {
 void
 skynet_fix_time(void) {
 	uint64_t org_current = TI->current;
+	uint64_t current_offset = 0;  // In case the offset is really big (RTC empty)
+
 	uint32_t starttime = 0;
 	uint32_t current = 0;
 	systime(&starttime, &current);
-	TI->current = current + (starttime - TI->starttime) * 100;
+
+	/// starttime offset
+	current_offset = starttime - TI->starttime;
+	current_offset = current_offset * 100;
+
+	TI->current = current + current_offset;
 	TI->current_point = gettime();
 
 	skynet_error(NULL, "fix time called, change from current %lld to %lld", org_current, TI->current);
