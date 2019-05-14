@@ -46,6 +46,8 @@ local function timing( method, ... )
 	assert(err,msg)
 end
 
+skynet.memlimit(32 * 1024 * 1024)
+
 skynet.start(function()
 	local init = false
 	local function dispatcher( session , source , id, ...)
