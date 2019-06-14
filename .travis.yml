@@ -21,19 +21,13 @@ branches:
 script:
     - mkdir -p luaclib/rs232
     - make linux
+    - sh .travis_pack.sh
 
 deploy:
     provider: releases
     api_key:
         secure: ${GH_TOKEN}
-    file_glob: true
     file:
-        - cservice/*
-        - service/*
-        - luaclib/*
-        - lualib/*
-        - skynet
-        - HISTORY.md
-        - LICENSE
-        - README.md
+        - skynet_release.tar.gz
+        - skynet_release.tar.gz.md5
     skip_cleanup: true
