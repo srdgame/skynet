@@ -1,0 +1,41 @@
+language: c
+
+dist: xenial
+
+os: linux
+
+compiler: gcc
+
+
+addons:
+    apt:
+        update: true
+
+before_install:
+    - sudo apt-get install -y libenet-dev libmodbus-dev
+
+branches:
+    only:
+        - master
+
+script:
+    - mkdir -p luaclib/rs232
+    - make linux
+
+deploy:
+    provider: releases
+    api_key:
+        secure: ${GH_TOKEN}
+    file_glob: true
+    file:
+        - cservice/*
+        - service/*
+        - luaclib/*
+        - lualib/*
+        - skynet
+        - HISTORY.md
+        - LICENSE
+        - README.md
+    skip_cleanup: true
+    on:
+        tags: true
