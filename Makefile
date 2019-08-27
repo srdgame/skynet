@@ -220,7 +220,7 @@ LUA_CLIB_MOSQ_INCLUDES = \
 	-I3rd/lua-mosquitto/deps/mosquitto -I3rd/lua-mosquitto/deps/mosquitto/lib -I3rd/lua-mosquitto -I3rd/lua-mosquitto/deps/mosquitto/src/deps
 
 $(LUA_CLIB_PATH)/mosquitto.so : $(addprefix 3rd/lua-mosquitto/deps/mosquitto/,$(LUA_CLIB_MQTT_MOSQ)) $(addprefix 3rd/lua-mosquitto/,$(LUA_CLIB_MOSQ)) | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ $(LUA_CLIB_MOSQ_INCLUDES) -DVERSION=\"1.4.12\" -DWITH_TLS -lssl -lcrypto
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ $(LUA_CLIB_MOSQ_INCLUDES) -DVERSION=\"1.4.12\" -DWITH_TLS -DWITH_TLS_PSK -lssl -lcrypto
 
 
 LUA_CLIB_LCURL = \
