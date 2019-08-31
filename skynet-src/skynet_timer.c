@@ -312,6 +312,7 @@ skynet_fix_time(void) {
 	TI->current = current_offset;
 	TI->current_point = gettime();
 
+	skynet_error(NULL, "fix time called, TI->starttime %u, startime %u, current %u", TI->starttime, starttime, current);
 	skynet_error(NULL, "fix time called, change from current %llu to %llu", org_current, TI->current);
 }
 
