@@ -38,7 +38,9 @@ android : SKYNET_LIBS = -lm
 
 macosx : MALLOC_STATICLIB :=
 macosx : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
-openwrt : JEMALLOC_FLAGS :=--host=$(TOOLCHAIN_ARCH)-openwrt-linux
+openwrt : MALLOC_STATICLIB :=
+openwrt : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
+# openwrt : JEMALLOC_FLAGS :=--host=$(TOOLCHAIN_ARCH)-openwrt-linux
 android : MALLOC_STATICLIB :=
 android : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
 
