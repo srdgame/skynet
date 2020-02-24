@@ -862,6 +862,7 @@ local debug = require "skynet.debug"
 debug.init(skynet, {
 	dispatch = skynet.dispatch_message,
 	suspend = suspend,
+	resume = coroutine_resume,
 })
 
 return skynet
