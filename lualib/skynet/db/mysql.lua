@@ -4,6 +4,8 @@
 -- The license is under the BSD license.
 -- Modified by Cloud Wu (remove bit32 for lua 5.3)
 
+-- protocol detail: https://mariadb.com/kb/en/clientserver-protocol/
+
 local socketchannel = require "skynet.socketchannel"
 local crypt = require "skynet.crypt"
 
@@ -100,20 +102,55 @@ local function _get_byte1(data, i)
     return strbyte(data, i), i + 1
 end
 
+local function _get_int1(data, i, is_signed)
+    if not is_signed then
+        return strunpack("<I1", data, i)
+    end
+    return strunpack("<i1", data, i)
+end
+
 local function _get_byte2(data, i)
     return strunpack("<I2", data, i)
+end
+
+local function _get_int2(data, i, is_signed)
+    if not is_signed then
+        return strunpack("<I2", data, i)
+    end
+    return strunpack("<i2", data, i)
 end
 
 local function _get_byte3(data, i)
     return strunpack("<I3", data, i)
 end
 
+local function _get_int3(data, i, is_signed)
+    if not is_signed then
+        return strunpack("<I3", data, i)
+    end
+    return strunpack("<i3", data, i)
+end
+
 local function _get_byte4(data, i)
     return strunpack("<I4", data, i)
 end
 
+local function _get_int4(data, i, is_signed)
+    if not is_signed then
+        return strunpack("<I4", data, i)
+    end
+    return strunpack("<i4", data, i)
+end
+
 local function _get_byte8(data, i)
     return strunpack("<I8", data, i)
+end
+
+local function _get_int8(data, i, is_signed)
+    if not is_signed then
+        return strunpack("<I8", data, i)
+    end
+    return strunpack("<i8", data, i)
 end
 
 local function _get_float(data, i)
@@ -138,6 +175,10 @@ end
 
 local function _set_byte8(n)
     return strpack("<I8", n)
+end
+
+local function _set_int8(n)
+    return strpack("<i8", n)
 end
 
 local function _set_float(n)
@@ -334,10 +375,13 @@ local function _parse_field_packet(data)
     charsetnr, pos = _get_byte2(data, pos)
     length, pos = _get_byte4(data, pos)
     col.type = strbyte(data, pos)
+    pos = pos + 1
+    local flags, pos = _get_byte2(data, pos)
+    if flags & 0x20 == 0 then -- https://mariadb.com/kb/en/resultset/
+        col.is_signed = true
+    end
 
     --[[
-    pos = pos + 1
-    col.flags, pos = _get_byte2(data, pos)
     col.decimals = strbyte(data, pos)
     pos = pos + 1
     local default = sub(data, pos + 2)
@@ -500,7 +544,7 @@ local store_types = {
         if not tointeger(v) then
             return _set_byte2(0x05), _set_double(v)
         else
-            return _set_byte2(0x08), _set_byte8(v)
+            return _set_byte2(0x08), _set_int8(v)
         end
     end,
     string = function(v)
@@ -783,14 +827,16 @@ local function _get_datetime(data, pos)
     return value, pos
 end
 
+-- 字段类型参考 https://dev.mysql.com/doc/dev/mysql-server/8.0.12/binary__log__types_8h.html enum_field_types 枚举类型定义
 local _binary_parser = {
-    [0x01] = _get_byte1,
-    [0x02] = _get_byte2,
-    [0x03] = _get_byte4,
+    [0x01] = _get_int1,
+    [0x02] = _get_int2,
+    [0x03] = _get_int4,
     [0x04] = _get_float,
     [0x05] = _get_double,
     [0x07] = _get_datetime,
-    [0x08] = _get_byte8,
+    [0x08] = _get_int8,
+    [0x09] = _get_int3,
     [0x0c] = _get_datetime,
     [0x0f] = _from_length_coded_str,
     [0x10] = _from_length_coded_str,
@@ -838,7 +884,7 @@ local function _parse_row_data_binary(data, cols, compact)
             if not parser then
                 error("_parse_row_data_binary()error,unsupported field type " .. typ)
             end
-            value, pos = parser(data, pos)
+            value, pos = parser(data, pos, col.is_signed)
             if compact then
                 row[i] = value
             else
