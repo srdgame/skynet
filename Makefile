@@ -187,6 +187,7 @@ LUA_CLIB_MQTT_MOSQ = \
 	lib/loop.c \
 	lib/memory_mosq.c \
 	lib/messages_mosq.c \
+	lib/misc_mosq.c \
 	lib/mosquitto.c \
 	lib/net_mosq.c \
 	lib/net_mosq_ocsp.c \
