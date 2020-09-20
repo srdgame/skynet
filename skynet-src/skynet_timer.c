@@ -290,30 +290,30 @@ skynet_now(void) {
 	return TI->current;
 }
 
-void
-skynet_fix_time(void) {
-	uint64_t org_current = TI->current;
-	int64_t current_offset = 0;  // In case the offset is really big (RTC empty)
+int64_t
+skynet_fixtime(void) {
+	int64_t offset = 0;
+	int64_t current_offset = 0;
 
 	uint32_t starttime = 0;
 	uint32_t current = 0;
 	systime(&starttime, &current);
 
 	/// starttime offset
-	current_offset = starttime - TI->starttime;
-	current_offset = current_offset * 100;
-	current_offset += current;
-	if (current_offset < 0) {
-		skynet_error(NULL, "fix time called, but offset is too large to be added to current!!!");
-		skynet_error(NULL, "TI->starttime %u, startime %u, current %u", TI->starttime, starttime, current);
-		return;
+	offset = starttime;
+	offset = offset - TI->starttime;
+
+	current_offset = current;
+	current_offset = current_offset- TI->current;
+	current_offset = offset * 100 + current_offset;
+
+	if (current_offset > 0) {
+		TI->current = TI->current + current_offset;
+	} else {
+		skynet_error(NULL, "fixtime error: current_offset: %lld", current_offset);
 	}
 
-	TI->current = current_offset;
-	TI->current_point = gettime();
-
-	skynet_error(NULL, "fix time called, TI->starttime %u, startime %u, current %u", TI->starttime, starttime, current);
-	skynet_error(NULL, "fix time called, change from current %llu to %llu", org_current, TI->current);
+	return current_offset;
 }
 
 void 

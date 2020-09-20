@@ -407,9 +407,10 @@ lnow(lua_State *L) {
 }
 
 static int
-lfix_time(lua_State *L) {
-	skynet_fix_time();
-	return 0;
+lfixtime(lua_State *L) {
+	int64_t offset = skynet_fixtime();
+	lua_pushinteger(L, offset);
+	return 1;
 }
 
 static int
@@ -511,7 +512,7 @@ luaopen_skynet_core(lua_State *L) {
 		{ "packstring", lpackstring },
 		{ "trash" , ltrash },
 		{ "now", lnow },
-		{ "fix_time", lfix_time },
+		{ "fixtime", lfixtime },
 		{ "hpc", lhpc },	// getHPCounter
 		{ NULL, NULL },
 	};

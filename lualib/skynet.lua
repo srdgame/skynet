@@ -281,7 +281,6 @@ function skynet.localname(name)
 end
 
 skynet.now = c.now
-skynet.fix_time = c.fix_time
 skynet.hpc = c.hpc	-- high performance counter
 
 local traceid = 0
@@ -317,6 +316,13 @@ end
 
 function skynet.time()
 	return skynet.now()/100 + (starttime or skynet.starttime())
+end
+
+function skynet.fix_time()
+	local now_offset = c.fixtime()
+	skynet.error(string.format("Trying to fix time diff caused by NTP? now_offset: %d", now_offset))
+	--- If the now_offset is minus, skynet framework will failed in this case, restart is needed.
+	return now_offset >= 0
 end
 
 function skynet.exit()
