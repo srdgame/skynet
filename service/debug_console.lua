@@ -89,9 +89,9 @@ local function docmd(cmdline, print, fd)
 	end
 end
 
-local function console_main_loop(stdin, print)
+local function console_main_loop(stdin, print, addr)
 	print("Welcome to skynet console")
-	skynet.error(stdin, "connected")
+	skynet.error(addr, "connected")
 	local ok, err = pcall(function()
 		while true do
 			local cmdline = socket.readline(stdin, "\n")
@@ -113,7 +113,7 @@ local function console_main_loop(stdin, print)
 	if not ok then
 		skynet.error(stdin, err)
 	end
-	skynet.error(stdin, "disconnected")
+	skynet.error(addr, "disconnect")
 	socket.close(stdin)
 end
 
@@ -130,7 +130,7 @@ skynet.start(function()
 			socket.write(id, "\n")
 		end
 		socket.start(id)
-		skynet.fork(console_main_loop, id , print)
+		skynet.fork(console_main_loop, id , print, addr)
 	end)
 end)
 
@@ -164,6 +164,7 @@ function COMMAND.help()
 		netstat = "netstat : show netstat",
 		profactive = "profactive [on|off] : active/deactive jemalloc heap profilling",
 		dumpheap = "dumpheap : dump heap profilling",
+		killtask = "killtask address threadname : threadname listed by task",
 	}
 end
 
@@ -246,7 +247,7 @@ function COMMAND.mem(ti)
 end
 
 function COMMAND.kill(address)
-	return skynet.call(".launcher", "lua", "KILL", address)
+	return skynet.call(".launcher", "lua", "KILL", adjust_address(address))
 end
 
 function COMMAND.gc(ti)
@@ -275,6 +276,11 @@ end
 function COMMAND.task(address)
 	address = adjust_address(address)
 	return skynet.call(address,"debug","TASK")
+end
+
+function COMMAND.killtask(address, threadname)
+	address = adjust_address(address)
+	return skynet.call(address, "debug", "KILLTASK", threadname)
 end
 
 function COMMAND.uniqtask(address)

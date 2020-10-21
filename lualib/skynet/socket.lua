@@ -26,14 +26,31 @@ local function wakeup(s)
 	end
 end
 
+local function pause_socket(s, size)
+	if s.pause then
+		return
+	end
+	if size then
+		skynet.error(string.format("Pause socket (%d) size : %d" , s.id, size))
+	else
+		skynet.error(string.format("Pause socket (%d)" , s.id))
+	end
+	driver.pause(s.id)
+	s.pause = true
+	skynet.yield()	-- there are subsequent socket messages in mqueue, maybe.
+end
+
 local function suspend(s)
 	assert(not s.co)
 	s.co = coroutine.running()
 	if s.pause then
+		skynet.error(string.format("Resume socket (%d)", s.id))
 		driver.start(s.id)
+		skynet.wait(s.co)
 		s.pause = nil
+	else
+		skynet.wait(s.co)
 	end
-	skynet.wait(s.co)
 	-- wakeup closing corouting every time suspend,
 	-- because socket.close() will wait last socket buffer operation before clear the buffer.
 	if s.closing then
@@ -58,11 +75,10 @@ socket_message[1] = function(id, size, data)
 		-- read size
 		if sz >= rr then
 			s.read_required = nil
-			wakeup(s)
 			if sz > BUFFER_LIMIT then
-				driver.pause(id)
-				s.pause = true
+				pause_socket(s, sz)
 			end
+			wakeup(s)
 		end
 	else
 		if s.buffer_limit and sz > s.buffer_limit then
@@ -74,15 +90,13 @@ socket_message[1] = function(id, size, data)
 			-- read line
 			if driver.readline(s.buffer,nil,rr) then
 				s.read_required = nil
-				wakeup(s)
 				if sz > BUFFER_LIMIT then
-					driver.pause(id)
-					s.pause = true
+					pause_socket(s, sz)
 				end
+				wakeup(s)
 			end
 		elseif sz > BUFFER_LIMIT and not s.pause then
-			driver.pause(id)
-			s.pause = true
+			pause_socket(s, sz)
 		end
 	end
 end
@@ -234,8 +248,7 @@ function socket.pause(id)
 	if s == nil or s.pause then
 		return
 	end
-	driver.pause(id)
-	s.pause = true
+	pause_socket(s)
 end
 
 function socket.shutdown(id)
