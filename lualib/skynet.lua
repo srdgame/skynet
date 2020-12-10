@@ -324,11 +324,14 @@ function suspend(co, result, command)
 		session_coroutine_address[co] = nil
 		session_coroutine_tracetag[co] = nil
 		skynet.fork(function() end)	-- trigger command "SUSPEND"
-		error(traceback(co,tostring(command)))
+		local tb = traceback(co,tostring(command))
+		coroutine.close(co)
+		error(tb)
 	end
 	if command == "SUSPEND" then
 		return dispatch_wakeup()
 	elseif command == "QUIT" then
+		coroutine.close(co)
 		-- service exit
 		return
 	elseif command == "USER" then
@@ -528,6 +531,11 @@ function skynet.exit()
 		local address = session_coroutine_address[co]
 		if session~=0 and address then
 			c.send(address, skynet.PTYPE_ERROR, session, "")
+		end
+	end
+	for session, co in pairs(session_id_coroutine) do
+		if type(co) == "thread" then
+			coroutine.close(co)
 		end
 	end
 	for resp in pairs(unresponse) do
