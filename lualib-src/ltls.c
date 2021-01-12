@@ -272,16 +272,29 @@ _lctx_gc(lua_State* L) {
 }
 
 static int
+_passwd_cb(char* buf, int size, int flag, void* passwd){
+    strncpy(buf, passwd, size);
+    buf[size-1] = '\0';
+    return (int)strlen(buf);
+}
+
+static int
 _lctx_cert(lua_State* L) {
     struct ssl_ctx* ctx_p = _check_sslctx(L, 1);
     const char* certfile = lua_tostring(L, 2);
     const char* key = lua_tostring(L, 3);
+    const char* passwd = luaL_optstring(L, 4, NULL);
     if(!certfile) {
         luaL_error(L, "need certfile");
     }
 
     if(!key) {
         luaL_error(L, "need private key");
+    }
+
+    if(passwd) {
+        SSL_CTX_set_default_passwd_cb(ctx_p->ctx, _passwd_cb);
+        SSL_CTX_set_default_passwd_cb_userdata(ctx_p->ctx, (void*)passwd);
     }
 
     int ret = SSL_CTX_use_certificate_chain_file(ctx_p->ctx, certfile);
@@ -297,8 +310,93 @@ _lctx_cert(lua_State* L) {
     if(ret != 1) {
         luaL_error(L, "SSL_CTX_check_private_key error:%d", ret);
     }
+
+    SSL_CTX_set_default_passwd_cb(ctx_p->ctx, NULL);
+    SSL_CTX_set_default_passwd_cb_userdata(ctx_p->ctx, NULL);
+
     return 0;
 }
+
+static int
+_lctx_load_ca(lua_State* L) {
+    struct ssl_ctx* ctx_p = _check_sslctx(L, 1);
+    const char* cafile = luaL_optstring(L, 2, NULL);
+    const char* capath = luaL_optstring(L, 3, NULL);
+    int ret = 0;
+
+    if (SSL_CTX_load_verify_locations(ctx_p->ctx, cafile, capath) != 1) {
+        luaL_error(L, "SSL_CTX_load_verify_locations error:%d", ret);
+    }
+
+    return 0;
+}
+
+/**
+ * Prepare the SSL handshake verify flag.
+ */
+static int
+_set_verify_flag(const char *str, int *flag)
+{
+    if (!strcmp(str, "none")) {
+        *flag |= SSL_VERIFY_NONE;
+        return 1;
+    }
+    if (!strcmp(str, "peer")) {
+        *flag |= SSL_VERIFY_PEER;
+        return 1;
+    }
+    if (!strcmp(str, "client_once")) {
+        *flag |= SSL_VERIFY_CLIENT_ONCE;
+        return 1;
+    }
+    if (!strcmp(str, "fail_if_no_peer_cert")) {
+        *flag |= SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
+        return 1;
+    }
+    return 0;
+}
+
+static int
+_lctx_set_verify(lua_State* L) {
+    int i;
+    const char *str;
+    int flag = 0;
+    struct ssl_ctx* ctx_p = _check_sslctx(L, 1);
+    int max = lua_gettop(L);
+    for (i = 2; i <= max; i++) {
+        str = luaL_checkstring(L, i);
+        if (!_set_verify_flag(str, &flag)) {
+            lua_pushboolean(L, 0);
+            lua_pushfstring(L, "invalid verify option (%s)", str);
+            return 2;
+        }
+    }
+    if (flag)
+        SSL_CTX_set_verify(ctx_p->ctx, flag, NULL);
+
+    lua_pushboolean(L, 1);
+    return 1;
+}
+
+static int
+_lctx_add1_host(lua_State* L) {
+    size_t size = 0;
+    X509_VERIFY_PARAM* param;
+    struct ssl_ctx* ctx_p = _check_sslctx(L, 1);
+    const char* s = luaL_optlstring(L, 2, NULL, &size);
+    if (!s){
+        luaL_error(L, "need hostname string");
+    }
+    param = SSL_CTX_get0_param(ctx_p->ctx);
+    if (!param){
+        luaL_error(L, "CTX verify param missing");
+    } else {
+        X509_VERIFY_PARAM_add1_host(param, s, size);
+    }
+
+    return 0;
+}
+
 
 static int
 _lctx_ciphers(lua_State* L) {
@@ -325,11 +423,15 @@ lnew_ctx(lua_State* L) {
         ERR_error_string_n(err, buf, sizeof(buf));
         luaL_error(L, "SSL_CTX_new client faild. %s\n", buf);
     }
+    SSL_CTX_set_app_data(ctx_p->ctx, ctx_p);
 
     if(luaL_newmetatable(L, "_TLS_SSLCTX_METATABLE_")) {
         luaL_Reg l[] = {
             {"set_ciphers", _lctx_ciphers},
             {"set_cert", _lctx_cert},
+            {"load_ca", _lctx_load_ca},
+            {"set_verify", _lctx_set_verify},
+            {"add1_host", _lctx_add1_host},
             {NULL, NULL},
         };
 
