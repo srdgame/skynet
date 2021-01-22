@@ -65,7 +65,7 @@ LUA_EX_CLIB = \
 
 ICONV_LIBS :=
 ifeq ($(PLAT),openwrt)
-	ICONV_LIBS := -Bstatic -liconv -L$(STAGING_DIR)/usr/lib/libiconv-full-full/lib -I$(STAGING_DIR)/usr/lib/libiconv-full-full/include
+	ICONV_LIBS := -Bstatic -l:libiconv.a -L$(STAGING_DIR)/usr/lib/libiconv-full-full/lib -I$(STAGING_DIR)/usr/lib/libiconv-full-full/include
 else
 ifeq ($(PLAT),android)
 	ICONV_LIBS := -liconv
