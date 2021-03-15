@@ -239,7 +239,8 @@ $(LUA_CLIB_PATH)/lcurl.so : $(addprefix 3rd/curl/,$(LUA_CLIB_LCURL)) | $(LUA_CLI
 	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/curl/src -DPTHREADS  -lcurl
 
 clean :
-	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so
+	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so && \
+		rm -rf $(SKYNET_BUILD_PATH)/*.dSYM $(CSERVICE_PATH)/*.dSYM $(LUA_CLIB_PATH)/*.dSYM
 	rm -rf $(RS232_CLIB_PATH)
 
 cleanall: clean
