@@ -61,6 +61,7 @@ LUA_EX_CLIB = \
   lfs cjson iconv \
   rs232/core mosquitto \
   lcurl zlib lsocket \
+  lcrypt \
   \
 
 ICONV_LIBS :=
@@ -237,6 +238,25 @@ LUA_CLIB_LCURL = \
 
 $(LUA_CLIB_PATH)/lcurl.so : $(addprefix 3rd/curl/,$(LUA_CLIB_LCURL)) | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/curl/src -DPTHREADS  -lcurl
+
+LUA_CLIB_LCRYPT = \
+	src/aes.c \
+	src/b64.c \
+	src/crc.c \
+	src/des.c \
+	src/dh.c \
+	src/hex.c \
+	src/hmac.c \
+	src/hmac_ex.c \
+	src/lcrypt.c \
+	src/rsa.c \
+	src/sha.c \
+	src/sm.c \
+	src/url.c \
+	src/uuid.c
+
+$(LUA_CLIB_PATH)/lcrypt.so : $(addprefix 3rd/lcrypt/,$(LUA_CLIB_LCRYPT)) | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lcrypt/src -DPTHREADS -lssl -lcrypto
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so && \

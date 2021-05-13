@@ -31,3 +31,6 @@
 [submodule "3rd/lsocket"]
 	path = 3rd/lsocket
 	url = https://github.com/cloudwu/lsocket.git
+[submodule "3rd/lcrypt"]
+	path = 3rd/lcrypt
+	url = https://github.com/srdgame/lcrypt.git
