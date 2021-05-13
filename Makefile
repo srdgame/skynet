@@ -112,7 +112,6 @@ $(CSERVICE_PATH) :
 	mkdir $(CSERVICE_PATH)
 
 $(RS232_CLIB_PATH):
-	cp 3rd/librs232/bindings/lua/rs232.lua lualib/
 	mkdir $(RS232_CLIB_PATH)
 
 define CSERVICE_TEMP
