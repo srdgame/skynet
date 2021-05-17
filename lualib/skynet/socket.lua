@@ -461,6 +461,7 @@ function socket.sendto(id, addr, port, msg)
 end
 socket.udp_address = assert(driver.udp_address)
 socket.netstat = assert(driver.info)
+socket.resolve = assert(driver.resolve)
 
 function socket.warning(id, callback)
 	local obj = socket_pool[id]
