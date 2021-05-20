@@ -255,7 +255,7 @@ LUA_CLIB_LCRYPT = \
 	src/uuid.c
 
 $(LUA_CLIB_PATH)/lcrypt.so : $(addprefix 3rd/lcrypt/,$(LUA_CLIB_LCRYPT)) | $(LUA_CLIB_PATH)
-	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lcrypt/src -DPTHREADS -lssl -lcrypto
+	$(CC) $(CFLAGS) $(SHARED) $^ -o $@ -I3rd/lcrypt/src -DPTHREADS -lcrypto
 
 clean :
 	rm -f $(SKYNET_BUILD_PATH)/skynet $(CSERVICE_PATH)/*.so $(LUA_CLIB_PATH)/*.so && \
