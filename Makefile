@@ -231,6 +231,7 @@ LUA_CLIB_LCURL = \
 	src/lcmime.c \
 	src/lcmulti.c \
 	src/lcshare.c \
+	src/lcurlapi.c \
 	src/lcurl.c \
 	src/lcutils.c \
 	\
