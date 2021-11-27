@@ -61,7 +61,7 @@ LUA_EX_CLIB = \
   lfs cjson iconv \
   rs232/core mosquitto \
   lcurl zlib lsocket \
-  lcrypt \
+  lcrypt qpack \
   \
 
 ICONV_LIBS :=
@@ -165,6 +165,9 @@ $(LUA_CLIB_PATH)/zlib.so : 3rd/lua-zlib/lua_zlib.c | $(LUA_CLIB_PATH)
 
 $(LUA_CLIB_PATH)/lsocket.so : 3rd/lsocket/lsocket.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/lsocket $^ -o $@
+
+$(LUA_CLIB_PATH)/qpack.so : 3rd/lua-qpack/lua_qpack.c 3rd/lua-qpack/qpack/qpack.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-qpack $^ -o $@ 
 
 LUA_CLIB_MQTT_MOSQ = \
 	lib/actions.c \

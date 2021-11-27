@@ -34,3 +34,6 @@
 [submodule "3rd/lcrypt"]
 	path = 3rd/lcrypt
 	url = https://github.com/srdgame/lcrypt.git
+[submodule "3rd/lua-qpack"]
+	path = 3rd/lua-qpack
+	url = https://github.com/srdgame/lua-qpack.git
