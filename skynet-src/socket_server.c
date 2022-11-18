@@ -114,6 +114,7 @@ struct socket {
 
 struct socket_server {
 	volatile uint64_t time;
+	int reserve_fd;	// for EMFILE
 	int recvctrl_fd;
 	int sendctrl_fd;
 	int checkctrl;
@@ -405,6 +406,7 @@ socket_server_create(uint64_t time) {
 	ss->recvctrl_fd = fd[0];
 	ss->sendctrl_fd = fd[1];
 	ss->checkctrl = 1;
+	ss->reserve_fd = dup(1);	// reserve an extra fd for EMFILE
 
 	for (i=0;i<MAX_SOCKET;i++) {
 		struct socket *s = &ss->slot[i];
@@ -525,6 +527,8 @@ socket_server_release(struct socket_server *ss) {
 	close(ss->sendctrl_fd);
 	close(ss->recvctrl_fd);
 	sp_release(ss->event_fd);
+	if (ss->reserve_fd >= 0)
+		close(ss->reserve_fd);
 	FREE(ss);
 }
 
@@ -1085,7 +1089,28 @@ listen_socket(struct socket_server *ss, struct request_listen * request, struct 
 		goto _failed;
 	}
 	ATOM_STORE(&s->type , SOCKET_TYPE_PLISTEN);
-	return -1;
+	result->opaque = request->opaque;
+	result->id = id;
+	result->ud = 0;
+	result->data = "listen";
+
+	union sockaddr_all u;
+	socklen_t slen = sizeof(u);
+	if (getsockname(listen_fd, &u.s, &slen) == 0) {
+		void * sin_addr = (u.s.sa_family == AF_INET) ? (void*)&u.v4.sin_addr : (void *)&u.v6.sin6_addr;
+		if (inet_ntop(u.s.sa_family, sin_addr, ss->buffer, sizeof(ss->buffer)) == 0) {
+			result->data = strerror(errno);
+			return SOCKET_ERR;
+		}
+		int sin_port = ntohs((u.s.sa_family == AF_INET) ? u.v4.sin_port : u.v6.sin6_port);
+		result->data = ss->buffer;
+		result->ud = sin_port;
+	} else {
+		result->data = strerror(errno);
+		return SOCKET_ERR;
+	}
+
+	return SOCKET_OPEN;
 _failed:
 	close(listen_fd);
 	result->opaque = request->opaque;
@@ -1340,7 +1365,7 @@ dec_sending_ref(struct socket_server *ss, int id) {
 static int
 ctrl_cmd(struct socket_server *ss, struct socket_message *result) {
 	int fd = ss->recvctrl_fd;
-	// the length of message is one byte, so 256+8 buffer size is enough.
+	// the length of message is one byte, so 256 buffer size is enough.
 	uint8_t buffer[256];
 	uint8_t header[2];
 	block_readpipe(fd, header, sizeof(header));
@@ -1581,6 +1606,16 @@ report_accept(struct socket_server *ss, struct socket *s, struct socket_message 
 			result->id = s->id;
 			result->ud = 0;
 			result->data = strerror(errno);
+
+			// See https://stackoverflow.com/questions/47179793/how-to-gracefully-handle-accept-giving-emfile-and-close-the-connection
+			if (ss->reserve_fd >= 0) {
+				close(ss->reserve_fd);
+				client_fd = accept(s->fd, &u.s, &len);
+				if (client_fd >= 0) {
+					close(client_fd);
+				}
+				ss->reserve_fd = dup(1);
+			}
 			return -1;
 		} else {
 			return 0;
