@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include <string.h> 
 #include <openssl/err.h>
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L && !defined(LIBRESSL_VERSION_NUMBER)
+#	include <openssl/bioerr.h>
+#endif
 #include <openssl/dh.h>
 #include <openssl/ssl.h>
 #include <openssl/conf.h>
@@ -513,7 +516,17 @@ ltls_init_constructor(lua_State* L) {
     if(!TLS_IS_INIT) {
         SSL_library_init();
         SSL_load_error_strings();
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L && !defined(LIBRESSL_VERSION_NUMBER)
+	/*
+	* ERR_load_*(), ERR_func_error_string(), ERR_get_error_line(), ERR_get_error_line_data(), ERR_get_state()
+	* OpenSSL now loads error strings automatically so these functions are not needed.
+	* SEE FOR MORE:
+	*	https://www.openssl.org/docs/manmaster/man7/migration_guide.html
+	*
+	*/
+#else
         ERR_load_BIO_strings();
+#endif
         OpenSSL_add_all_algorithms();
     }
 #endif
