@@ -76,6 +76,12 @@
 #endif
 
 
+#if defined(LUA_USE_IOS)
+#define LUA_USE_POSIX
+#define LUA_USE_DLOPEN
+#endif
+
+
 /*
 @@ LUAI_IS32INT is true iff 'int' has (at least) 32 bits.
 */
