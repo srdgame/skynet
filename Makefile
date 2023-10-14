@@ -252,6 +252,7 @@ LUA_CLIB_LCRYPT = \
 	src/hmac.c \
 	src/hmac_ex.c \
 	src/lcrypt.c \
+	src/rc.c \
 	src/rsa.c \
 	src/sha.c \
 	src/sm.c \
