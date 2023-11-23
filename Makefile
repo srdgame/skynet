@@ -61,7 +61,7 @@ LUA_EX_CLIB = \
   lfs cjson iconv \
   rs232/core mosquitto \
   lcurl zlib lsocket \
-  lcrypt qpack \
+  lcrypt qpack luevent \
   \
 
 ICONV_LIBS :=
