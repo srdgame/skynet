@@ -169,6 +169,9 @@ $(LUA_CLIB_PATH)/lsocket.so : 3rd/lsocket/lsocket.c | $(LUA_CLIB_PATH)
 $(LUA_CLIB_PATH)/qpack.so : 3rd/lua-qpack/lua_qpack.c 3rd/lua-qpack/qpack/qpack.c | $(LUA_CLIB_PATH)
 	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-qpack $^ -o $@ 
 
+$(LUA_CLIB_PATH)/luevent.so : 3rd/lua-uevent/lua_uevent.c | $(LUA_CLIB_PATH)
+	$(CC) $(CFLAGS) $(SHARED) -I3rd/lua-uevent $^ -o $@
+
 LUA_CLIB_MQTT_MOSQ = \
 	lib/actions.c \
 	lib/alias_mosq.c \

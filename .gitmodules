@@ -37,3 +37,6 @@
 [submodule "3rd/lua-qpack"]
 	path = 3rd/lua-qpack
 	url = https://github.com/srdgame/lua-qpack.git
+[submodule "3rd/lua-uevent"]
+	path = 3rd/lua-uevent
+	url = https://github.com/srdgame/lua-uevent.git
