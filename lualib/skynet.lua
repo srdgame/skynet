@@ -660,7 +660,9 @@ function skynet.exit()
 		c.send(address, skynet.PTYPE_ERROR, 0, "")
 	end
 	c.callback(function(prototype, msg, sz, session, source)
-		c.send(source, skynet.PTYPE_ERROR, session, "")
+		if session ~= 0 and source ~= 0 then
+			c.send(source, skynet.PTYPE_ERROR, session, "")
+		end
 	end)
 	c.command("EXIT")
 	-- quit service
@@ -1081,10 +1083,20 @@ function skynet.stat(what)
 	return c.intcommand("STAT", what)
 end
 
+local function task_traceback(co)
+	if co == "BREAK" then
+		return co
+	elseif timeout_traceback and timeout_traceback[co] then
+		return timeout_traceback[co]
+	else
+		return traceback(co)
+	end
+end
+
 function skynet.task(ret)
 	if ret == nil then
 		local t = 0
-		for session,co in pairs(session_id_coroutine) do
+		for _,co in pairs(session_id_coroutine) do
 			if co ~= "BREAK" then
 				t = t + 1
 			end
@@ -1102,23 +1114,13 @@ function skynet.task(ret)
 	if tt == "table" then
 		for session,co in pairs(session_id_coroutine) do
 			local key = string.format("%s session: %d", tostring(co), session)
-			if co == "BREAK" then
-				ret[key] = "BREAK"
-			elseif timeout_traceback and timeout_traceback[co] then
-				ret[key] = timeout_traceback[co]
-			else
-				ret[key] = traceback(co)
-			end
+			ret[key] = task_traceback(co)
 		end
 		return
 	elseif tt == "number" then
 		local co = session_id_coroutine[ret]
 		if co then
-			if co == "BREAK" then
-				return "BREAK"
-			else
-				return traceback(co)
-			end
+			return task_traceback(co)
 		else
 			return "No session"
 		end
@@ -1135,7 +1137,7 @@ end
 function skynet.uniqtask()
 	local stacks = {}
 	for session, co in pairs(session_id_coroutine) do
-		local stack = traceback(co)
+		local stack = task_traceback(co)
 		local info = stacks[stack] or {count = 0, sessions = {}}
 		info.count = info.count + 1
 		if info.count < 10 then
