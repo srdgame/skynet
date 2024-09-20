@@ -471,7 +471,19 @@ function socket.udp_connect(id, addr, port, callback)
 	driver.udp_connect(id, addr, port)
 end
 
---function socket.sendto(id, from, msg)
+function socket.udp_listen(addr, port, callback)
+	local id = driver.udp_listen(addr, port)
+	create_udp_object(id, callback)
+	return id
+end
+
+function socket.udp_dial(addr, port, callback)
+	local id = driver.udp_dial(addr, port)
+	create_udp_object(id, callback)
+	return id
+end
+
+-- socket.sendto = assert(driver.udp_send)
 function socket.sendto(id, addr, port, msg)
 	local sendto = msg and driver.udp_sendto or driver.udp_send
 	return sendto(id, addr, port, msg)
