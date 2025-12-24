@@ -1,5 +1,5 @@
 PLAT ?= none
-PLATS = linux freebsd macosx openwrt android
+PLATS = linux freebsd macosx mingw openwrt android
 
 CC ?= gcc
 
@@ -27,6 +27,7 @@ macosx : PLAT = macosx
 freebsd : PLAT = freebsd
 openwrt : PLAT = openwrt
 android : PLAT = android
+mingw : PLAT = mingw
 
 macosx : SHARED := -fPIC -dynamiclib -Wl,-undefined,dynamic_lookup
 macosx : EXPORT :=
@@ -46,3 +47,6 @@ android : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
 
 linux macosx freebsd openwrt android :
 	$(MAKE) all PLAT=$@ SKYNET_LIBS="$(SKYNET_LIBS)" SHARED="$(SHARED)" EXPORT="$(EXPORT)" MALLOC_STATICLIB="$(MALLOC_STATICLIB)" SKYNET_DEFINES="$(SKYNET_DEFINES)" JEMALLOC_FLAGS="$(JEMALLOC_FLAGS)"
+
+mingw :
+	$(MAKE) -f mingw.mk all PLAT=$@
