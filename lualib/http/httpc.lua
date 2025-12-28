@@ -83,13 +83,18 @@ end
 local function connect(host, timeout)
 	local protocol, host, port = check_protocol(host)
 	local hostaddr = host
-	if async_dns and host:find "^[^:]-%D$" then
-		-- if ipv6, contains colons
-		-- if ipv4, end with a digit
-		local msg
-		hostaddr, msg = dns.resolve(host)
-		if not hostaddr then
-			error(string.format("%s dns resolve failed msg:%s", host, msg))
+	local hostname
+	if host:find "^[^:]-%D$" then
+		-- it's a hostname (not ip address), because
+		--   ipv6 contains colons
+		--   ipv4 end with a digit
+		hostname = host
+		if async_dns then
+			local msg
+			hostaddr, msg = dns.resolve(host)
+			if not hostaddr then
+				error(string.format("%s dns resolve failed msg:%s", host, msg))
+			end
 		end
 	end
 
@@ -97,7 +102,7 @@ local function connect(host, timeout)
 	if not fd then
 		error(string.format("%s connect error host:%s, port:%s, timeout:%s", protocol, host, port, timeout))
 	end
-	local interface = gen_interface(protocol, fd, host)
+	local interface = gen_interface(protocol, fd, hostname)
 	if timeout then
 		skynet.timeout(timeout, function()
 			if not interface.finish then
