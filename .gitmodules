@@ -3,13 +3,13 @@
 	url = https://github.com/jemalloc/jemalloc.git
 [submodule "3rd/luafilesystem"]
 	path = 3rd/luafilesystem
-	url = https://github.com/keplerproject/luafilesystem.git
+	url = https://github.com/lunarmodules/luafilesystem.git
 [submodule "3rd/cjson"]
 	path = 3rd/cjson
 	url = https://github.com/srdgame/lua-cjson.git
 [submodule "3rd/iconv"]
 	path = 3rd/iconv
-	url = https://github.com/ittner/lua-iconv.git
+	url = https://github.com/lunarmodules/lua-iconv.git
 [submodule "3rd/lua-enet"]
 	path = 3rd/lua-enet
 	url = https://github.com/srdgame/lua-enet.git
@@ -21,7 +21,7 @@
 	url = https://github.com/kooiot/lua-mosquitto.git
 [submodule "3rd/lua-libmodbus"]
 	path = 3rd/lua-libmodbus
-	url = https://github.com/kooiot/lua-libmodbus
+	url = https://github.com/kooiot/lua-libmodbus.git
 [submodule "3rd/curl"]
 	path = 3rd/curl
 	url = https://github.com/srdgame/Lua-cURLv3.git
