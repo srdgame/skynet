@@ -1,5 +1,9 @@
 PLAT ?= none
+<<<<<<< HEAD
 PLATS = linux freebsd macosx mingw openwrt android
+=======
+PLATS = linux freebsd openbsd macosx mingw
+>>>>>>> upstream/master
 
 CC ?= gcc
 
@@ -25,6 +29,7 @@ EXPORT := -Wl,-E
 linux : PLAT = linux
 macosx : PLAT = macosx
 freebsd : PLAT = freebsd
+openbsd : PLAT = openbsd
 openwrt : PLAT = openwrt
 android : PLAT = android
 mingw : PLAT = mingw
@@ -37,15 +42,11 @@ android : SKYNET_LIBS = -lm
 
 # Turn off jemalloc and malloc hook on macosx
 
-macosx : MALLOC_STATICLIB :=
-macosx : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
-openwrt : MALLOC_STATICLIB :=
-openwrt : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
+android openbsd openwrt macosx : MALLOC_STATICLIB :=
+android openbsd openwrt macosx : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
 # openwrt : JEMALLOC_FLAGS :=--host=$(TOOLCHAIN_ARCH)-openwrt-linux
-android : MALLOC_STATICLIB :=
-android : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
 
-linux macosx freebsd openwrt android :
+linux macosx freebsd openbsd openwrt android :
 	$(MAKE) all PLAT=$@ SKYNET_LIBS="$(SKYNET_LIBS)" SHARED="$(SHARED)" EXPORT="$(EXPORT)" MALLOC_STATICLIB="$(MALLOC_STATICLIB)" SKYNET_DEFINES="$(SKYNET_DEFINES)" JEMALLOC_FLAGS="$(JEMALLOC_FLAGS)"
 
 mingw :
