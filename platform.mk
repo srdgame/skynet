@@ -1,9 +1,5 @@
 PLAT ?= none
-<<<<<<< HEAD
-PLATS = linux freebsd macosx mingw openwrt android
-=======
-PLATS = linux freebsd openbsd macosx mingw
->>>>>>> upstream/master
+PLATS = linux freebsd openbsd openwrt android macosx mingw
 
 CC ?= gcc
 
